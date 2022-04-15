@@ -14,9 +14,22 @@ int main()
     window.setVerticalSyncEnabled(true);
 
     std::vector<Planet> planets;
+
     float startX = 0, startY = 0;
-    float startRadius = 10, startMass = 8;
+    float radius = 10, mass = 10;
+
+    float radiusIncreaser = 1.0f;
+    float massIncreaser = 1.0f;
+
+    float maxRadius = 75.0f;
+    float maxMass = 75.0f;
+
     bool isButtonPressed = false;
+
+    sf::Color blue = sf::Color::Blue;
+    sf::Color yellow = sf::Color::Yellow;
+    sf::Color col = blue;
+    bool isBlue = true;
 
     while (window.isOpen())
     {
@@ -41,13 +54,19 @@ int main()
             {
                 if (event.mouseWheel.delta == 1)
                 {
-                    startRadius += 0.25f;
-                    startMass += 0.01f;
+                    if (radius < maxRadius)
+                        radius += radiusIncreaser;
+
+                    if (mass < maxMass)
+                        mass += massIncreaser;
                 }
                 if (event.mouseWheel.delta -= 1)
                 {
-                    startRadius -= 0.25f;
-                    startMass -= 0.01f;
+                    if (radius > 0)
+                        radius -= radiusIncreaser;
+
+                    if (mass > 0)
+                        mass -= massIncreaser;
                 }
             }
             if (event.type == sf::Event::MouseButtonReleased)
@@ -59,8 +78,11 @@ int main()
                     sf::Vector2f startPosition(x, y);
 
                     sf::Vector2f startDirection(x - startX, y - startY);
-                    sf::Color randomColor(rand() % 255, rand() % 255, rand() % 255);
-                    Planet planet(pow(startMass, 8), startRadius, startPosition, startDirection / 25.0f, randomColor);
+
+                    isBlue ? col = blue : col = yellow;
+                    isBlue = !isBlue;
+
+                    Planet planet(mass, radius, startPosition, startDirection / 25.0f, col);
 
                     planets.push_back(planet);
                     isButtonPressed = false;
@@ -71,10 +93,10 @@ int main()
         window.clear();
         Planet::DrawPlanets(planets, window);
         Planet::CollisionCheck(planets, WINDOW_WIDTH, WINDOW_HEIGHT);
-        Planet::CalculateForces(planets);
+        //Planet::CheckVelocity(planets, 25.0f);
         sf::CircleShape templateShape;
-        templateShape.setFillColor(sf::Color::Green);
-        templateShape.setRadius(startRadius);
+        templateShape.setFillColor(col);
+        templateShape.setRadius(radius);
         window.draw(templateShape);
         window.display();
     }

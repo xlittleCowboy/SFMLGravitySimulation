@@ -16,6 +16,7 @@ int main()
     std::vector<Planet> planets;
 
     float startX = 0, startY = 0;
+    float x = 0, y = 0;
     float radius = 10, mass = 10;
 
     float radiusIncreaser = 1.0f;
@@ -24,7 +25,7 @@ int main()
     float maxRadius = 75.0f;
     float maxMass = 75.0f;
 
-    bool isButtonPressed = false;
+    bool isLeftButtonPressed = false;
 
     sf::Color blue = sf::Color::Blue;
     sf::Color yellow = sf::Color::Yellow;
@@ -41,15 +42,7 @@ int main()
             if (event.type == sf::Event::KeyPressed)
                 if (event.key.code == sf::Keyboard::Escape)
                     window.close();
-            if (event.type == sf::Event::MouseButtonPressed)
-            {
-                if (event.mouseButton.button == sf::Mouse::Left && !isButtonPressed)
-                {
-                    startX = event.mouseButton.x;
-                    startY = event.mouseButton.y;
-                    isButtonPressed = true;
-                }
-            }
+
             if (event.type == sf::Event::MouseWheelMoved)
             {
                 if (event.mouseWheel.delta == 1)
@@ -73,9 +66,11 @@ int main()
             {
                 if (event.mouseButton.button == sf::Mouse::Left)
                 {
-                    float x = sf::Mouse::getPosition(window).x;
-                    float y = sf::Mouse::getPosition(window).y;
-                    sf::Vector2f startPosition(x, y);
+                    isLeftButtonPressed = false;
+
+                    x = sf::Mouse::getPosition(window).x;
+                    y = sf::Mouse::getPosition(window).y;
+                    sf::Vector2f startPosition(startX, startY);
 
                     sf::Vector2f startDirection(x - startX, y - startY);
 
@@ -85,7 +80,6 @@ int main()
                     Planet planet(mass, radius, startPosition, startDirection / 25.0f, col);
 
                     planets.push_back(planet);
-                    isButtonPressed = false;
                 }
             }
         }
@@ -94,10 +88,26 @@ int main()
         Planet::DrawPlanets(planets, window);
         Planet::CollisionCheck(planets, WINDOW_WIDTH, WINDOW_HEIGHT);
         //Planet::CheckVelocity(planets, 25.0f);
+
         sf::CircleShape templateShape;
         templateShape.setFillColor(col);
         templateShape.setRadius(radius);
         window.draw(templateShape);
+
+        if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+        {
+            if (!isLeftButtonPressed)
+            {
+                startX = sf::Mouse::getPosition(window).x;
+                startY = sf::Mouse::getPosition(window).y;
+                isLeftButtonPressed = true;
+            }
+
+            x = sf::Mouse::getPosition(window).x;
+            y = sf::Mouse::getPosition(window).y;
+            window.draw(Planet::DrawStartVector(startX, startY, x, y));
+        }
+
         window.display();
     }
 

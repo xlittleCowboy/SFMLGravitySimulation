@@ -21,6 +21,7 @@ public:
 	static void DrawPlanets(std::vector<Planet>& planets, sf::RenderWindow& window);
 	static void CollisionCheck(std::vector<Planet>& planets, const int WINDOW_WIDTH, const int WINDOW_HEIGHT);
 	static void CheckVelocity(std::vector<Planet>& planets, float maxSpeed);
+	static sf::RectangleShape DrawStartVector(float x1, float y1, float x2, float y2);
 
 	float GetMass();
 	float GetRadius();

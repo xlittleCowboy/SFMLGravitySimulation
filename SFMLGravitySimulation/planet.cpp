@@ -21,6 +21,19 @@ void Planet::DrawPlanets(std::vector<Planet>& planets, sf::RenderWindow& window)
 	}
 }
 
+sf::RectangleShape Planet::DrawStartVector(float x1, float y1, float x2, float y2)
+{
+	float lineThickness = 5.0f;
+	float length = sqrt(pow(x2 - x1, 2) + pow(y2 - y1, 2));
+	x2 - x1 > 0 ? length *= 1 : length *= -1;
+	sf::Vector2f lineVector(length, lineThickness);
+	sf::RectangleShape line(lineVector);
+	line.setFillColor(sf::Color::White);
+	line.setPosition(sf::Vector2f(x1, y1));
+	line.rotate(atan((y2 - y1) / (x2 - x1)) * 180 / 3.14f);
+	return line;
+}
+
 void Planet::CollisionCheck(std::vector<Planet>& planets, const int WINDOW_WIDTH, const int WINDOW_HEIGHT)
 {
 	for (int i = 0; i < planets.size(); i++)
@@ -77,8 +90,8 @@ void Planet::CalculateForces(std::vector<Planet>& planets)
 		{
 			for (int j = i + 1; j < planets.size(); j++)
 			{
-				float x = planets[j].shape.getPosition().x - planets[i].shape.getPosition().x;
-				float y = planets[j].shape.getPosition().y - planets[i].shape.getPosition().y;
+				float x = planets[j].shape.getPosition().x + planets[j].GetRadius() - planets[i].shape.getPosition().x - planets[i].GetRadius();
+				float y = planets[j].shape.getPosition().y + planets[j].GetRadius() - planets[i].shape.getPosition().y - planets[i].GetRadius();
 				float lenght = GetDistation(planets[i], planets[j]);
 				sf::Vector2f force(x / lenght, y / lenght);
 				force *= (float)(planets[i].GetMass() * planets[j].GetMass() / pow(lenght, 2));

@@ -17,6 +17,7 @@ int main()
 
     float startX = 0, startY = 0;
     float x = 0, y = 0;
+    sf::Vector2f startVelocity;
     float radius = 10, mass = 10;
 
     float radiusIncreaser = 1.0f;
@@ -68,16 +69,12 @@ int main()
                 {
                     isLeftButtonPressed = false;
 
-                    x = sf::Mouse::getPosition(window).x;
-                    y = sf::Mouse::getPosition(window).y;
                     sf::Vector2f startPosition(startX, startY);
-
-                    sf::Vector2f startDirection(x - startX, y - startY);
 
                     isBlue ? col = blue : col = yellow;
                     isBlue = !isBlue;
 
-                    Planet planet(mass, radius, startPosition, startDirection / 25.0f, col);
+                    Planet planet(mass, radius, startPosition, startVelocity / 5.0f, col);
 
                     planets.push_back(planet);
                 }
@@ -87,7 +84,6 @@ int main()
         window.clear();
         Planet::DrawPlanets(planets, window);
         Planet::CollisionCheck(planets, WINDOW_WIDTH, WINDOW_HEIGHT);
-        //Planet::CheckVelocity(planets, 25.0f);
 
         sf::CircleShape templateShape;
         templateShape.setFillColor(col);
@@ -105,7 +101,10 @@ int main()
 
             x = sf::Mouse::getPosition(window).x;
             y = sf::Mouse::getPosition(window).y;
-            window.draw(Planet::DrawStartVector(startX, startY, x, y));
+            startVelocity.x = x - startX;
+            startVelocity.y = y - startY;
+            Planet::ClampStartVelocity(startVelocity, 100.0f);
+            window.draw(Planet::DrawStartVector(startX, startY, startVelocity, y));
         }
 
         window.display();

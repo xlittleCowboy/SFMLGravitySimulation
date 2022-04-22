@@ -21,16 +21,18 @@ void Planet::DrawPlanets(std::vector<Planet>& planets, sf::RenderWindow& window)
 	}
 }
 
-sf::RectangleShape Planet::DrawStartVector(float x1, float y1, float x2, float y2)
+sf::RectangleShape Planet::DrawStartVector(float startX, float startY, sf::Vector2f startVelocity, float y2)
 {
+	float x = startVelocity.x;
+	float y = startVelocity.y;
 	float lineThickness = 5.0f;
-	float length = sqrt(pow(x2 - x1, 2) + pow(y2 - y1, 2));
-	x2 - x1 > 0 ? length *= 1 : length *= -1;
+	float length = sqrt(pow(x, 2) + pow(y, 2));
+	x > 0 ? length *= 1 : length *= -1;
 	sf::Vector2f lineVector(length, lineThickness);
 	sf::RectangleShape line(lineVector);
 	line.setFillColor(sf::Color::White);
-	line.setPosition(sf::Vector2f(x1, y1));
-	line.rotate(atan((y2 - y1) / (x2 - x1)) * 180 / 3.14f);
+	line.setPosition(sf::Vector2f(startX, startY));
+	line.rotate(atan(y / x) * 180 / 3.14f);
 	return line;
 }
 
@@ -101,14 +103,15 @@ void Planet::CalculateForces(std::vector<Planet>& planets)
 		}
 }
 
-void Planet::CheckVelocity(std::vector<Planet>& planets, float maxSpeed)
+void Planet::ClampStartVelocity(sf::Vector2f& startVelocity, float maxVelocity)
 {
-	for (int i = 0; i < planets.size(); i++)
+	float x = startVelocity.x;
+	float y = startVelocity.y;
+	float lenght = sqrt(pow(x, 2) + pow(y, 2));
+	if (lenght > maxVelocity)
 	{
-		if (sqrt(pow(planets[i].GetVelocity().x, 2) + pow(planets[i].GetVelocity().y, 2)) >= maxSpeed)
-		{
-			planets[i].SetVelocity(planets[i].GetVelocity() / 2.0f);
-		}
+		startVelocity.x = (x) / lenght * maxVelocity;
+		startVelocity.y = (y) / lenght * maxVelocity;
 	}
 }
 

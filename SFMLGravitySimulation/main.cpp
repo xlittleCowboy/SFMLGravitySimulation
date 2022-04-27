@@ -6,6 +6,7 @@
 #include "planet.h"
 #include "settings.h"
 
+// Initialize static values
 float Settings::deltaTime;
 sf::Clock Settings::clock;
 
@@ -13,13 +14,9 @@ std::vector<Planet> Planet::planets;
 
 int main()
 {
-    srand(time(0));
-
     const int WINDOW_WIDTH = sf::VideoMode().getDesktopMode().width, WINDOW_HEIGHT = sf::VideoMode().getDesktopMode().height;
     sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Gravity!", sf::Style::Fullscreen);
     window.setVerticalSyncEnabled(true);
-
-    std::vector<Planet> planets;
 
     float startX = 0, startY = 0;
     float x = 0, y = 0;
@@ -82,14 +79,14 @@ int main()
 
                     Planet planet(mass, radius, startPosition, startVelocity, col);
 
-                    planets.push_back(planet);
+                    Planet::AddPlanet(planet);
                 }
             }
         }
 
         window.clear();
-        Planet::DrawPlanets(planets, window);
-        Planet::CollisionCheck(planets, WINDOW_WIDTH, WINDOW_HEIGHT);
+        Planet::DrawPlanets(window);
+        Planet::CollisionCheck(WINDOW_WIDTH, WINDOW_HEIGHT);
 
         sf::CircleShape templateShape;
         templateShape.setFillColor(col);
@@ -109,7 +106,6 @@ int main()
             y = sf::Mouse::getPosition(window).y;
             startVelocity.x = x - startX;
             startVelocity.y = y - startY;
-            //Planet::ClampStartVelocity(startVelocity, 100.0f);
             window.draw(Planet::DrawStartVector(startX, startY, startVelocity, y));
         }
 

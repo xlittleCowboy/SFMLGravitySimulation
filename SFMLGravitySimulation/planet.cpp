@@ -12,7 +12,12 @@ Planet::Planet(float mass, float radius, sf::Vector2f startPosition, sf::Vector2
 	shape.setPosition(startPosition - sf::Vector2f(1.0f, 1.0f) * radius);
 }
 
-void Planet::DrawPlanets(std::vector<Planet>& planets, sf::RenderWindow& window)
+void Planet::AddPlanet(Planet planet)
+{
+	planets.push_back(planet);
+}
+
+void Planet::DrawPlanets(sf::RenderWindow& window)
 {
 	for (int i = 0; i < planets.size(); i++)
 	{
@@ -36,17 +41,22 @@ sf::RectangleShape Planet::DrawStartVector(float startX, float startY, sf::Vecto
 	return line;
 }
 
-void Planet::CollisionCheck(std::vector<Planet>& planets, const int WINDOW_WIDTH, const int WINDOW_HEIGHT)
+void Planet::CollisionCheck(const int WINDOW_WIDTH, const int WINDOW_HEIGHT)
 {
 	for (int i = 0; i < planets.size(); i++)
 	{
 		if (planets[i].shape.getPosition().x <= 0 || planets[i].shape.getPosition().x >= WINDOW_WIDTH - planets[i].radius * 2)
+		{
 			planets[i].velocity.x *= -1;
+		}
 		if (planets[i].shape.getPosition().y <= 0 || planets[i].shape.getPosition().y >= WINDOW_HEIGHT - planets[i].radius * 2)
+		{
 			planets[i].velocity.y *= -1;
+		}
 	}
 
 	if (planets.size() > 1)
+	{
 		for (int i = 0; i < planets.size() - 1; i++)
 		{
 			for (int j = i + 1; j < planets.size(); j++)
@@ -80,14 +90,16 @@ void Planet::CollisionCheck(std::vector<Planet>& planets, const int WINDOW_WIDTH
 					planets[j].velocity = v2 - (2 * m1 * scalarProduct * deltaC) / ((m1 + m2) * moduleDeltaC * moduleDeltaC);
 				}
 				else
-					CalculateForces(planets);
+					CalculateForces();
 			}
 		}
+	}
 }
 
-void Planet::CalculateForces(std::vector<Planet>& planets)
+void Planet::CalculateForces()
 {
 	if (planets.size() > 1)
+	{
 		for (int i = 0; i < planets.size() - 1; i++)
 		{
 			for (int j = i + 1; j < planets.size(); j++)
@@ -101,28 +113,7 @@ void Planet::CalculateForces(std::vector<Planet>& planets)
 				planets[j].velocity -= force;
 			}
 		}
-}
-
-void Planet::ClampStartVelocity(sf::Vector2f& startVelocity, float maxVelocity)
-{
-	float x = startVelocity.x;
-	float y = startVelocity.y;
-	float lenght = sqrt(pow(x, 2) + pow(y, 2));
-	if (lenght > maxVelocity)
-	{
-		startVelocity.x = (x) / lenght * maxVelocity;
-		startVelocity.y = (y) / lenght * maxVelocity;
 	}
-}
-
-void Planet::SetVelocity(sf::Vector2f velocity)
-{
-	this->velocity = velocity;
-}
-
-sf::Vector2f Planet::GetVelocity()
-{
-	return velocity;
 }
 
 float Planet::GetDistation(Planet planet1, Planet planet2)
@@ -130,6 +121,11 @@ float Planet::GetDistation(Planet planet1, Planet planet2)
 	float x = planet2.shape.getPosition().x + planet2.GetRadius() - planet1.shape.getPosition().x - planet1.GetRadius();
 	float y = planet2.shape.getPosition().y + planet2.GetRadius() - planet1.shape.getPosition().y - planet1.GetRadius();
 	return sqrt(pow(x, 2) + pow(y, 2));
+}
+
+sf::Vector2f Planet::GetVelocity()
+{
+	return velocity;
 }
 
 float Planet::GetMass()

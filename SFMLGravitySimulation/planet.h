@@ -3,6 +3,7 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include <vector>
+#include "settings.h"
 
 class Planet
 {
@@ -11,6 +12,8 @@ private:
 	sf::CircleShape shape;
 	sf::Color color;
 	sf::Vector2f velocity;
+
+	static std::vector<Planet> planets;
 
 	static float GetDistation(Planet planet1, Planet planet2);
 	static void CalculateForces(std::vector<Planet>& planets);

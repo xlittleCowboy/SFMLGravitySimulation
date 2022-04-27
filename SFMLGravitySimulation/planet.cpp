@@ -16,7 +16,7 @@ void Planet::DrawPlanets(std::vector<Planet>& planets, sf::RenderWindow& window)
 {
 	for (int i = 0; i < planets.size(); i++)
 	{
-		planets[i].shape.move(planets[i].velocity);
+		planets[i].shape.move(planets[i].velocity * Settings::GetDeltaTime());
 		window.draw(planets[i].shape);
 	}
 }

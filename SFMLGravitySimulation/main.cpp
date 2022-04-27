@@ -4,6 +4,12 @@
 #include <ctime>
 
 #include "planet.h"
+#include "settings.h"
+
+float Settings::deltaTime;
+sf::Clock Settings::clock;
+
+std::vector<Planet> Planet::planets;
 
 int main()
 {
@@ -74,7 +80,7 @@ int main()
                     isBlue ? col = blue : col = yellow;
                     isBlue = !isBlue;
 
-                    Planet planet(mass, radius, startPosition, startVelocity / 5.0f, col);
+                    Planet planet(mass, radius, startPosition, startVelocity, col);
 
                     planets.push_back(planet);
                 }
@@ -103,11 +109,13 @@ int main()
             y = sf::Mouse::getPosition(window).y;
             startVelocity.x = x - startX;
             startVelocity.y = y - startY;
-            Planet::ClampStartVelocity(startVelocity, 100.0f);
+            //Planet::ClampStartVelocity(startVelocity, 100.0f);
             window.draw(Planet::DrawStartVector(startX, startY, startVelocity, y));
         }
 
         window.display();
+
+        Settings::UpdateDeltaTime();
     }
 
     return 0;

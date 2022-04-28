@@ -16,7 +16,7 @@ private:
 	static std::vector<Planet> planets;
 
 	static float GetDistation(Planet planet1, Planet planet2);
-	static void CalculateForces();
+	static void CalculateGravityForces();
 
 public:
 	Planet(float mass, float radius, sf::Vector2f startPosition, sf::Vector2f startDirection, sf::Color color);
@@ -25,10 +25,6 @@ public:
 
 	static void CollisionCheck(const int WINDOW_WIDTH, const int WINDOW_HEIGHT);
 	static void DrawPlanets(sf::RenderWindow& window);
-	static sf::RectangleShape DrawStartVector(float startX, float startY, sf::Vector2f startVelocity, float y2);
-
-	sf::Vector2f GetVelocity();
-	float GetMass();
-	float GetRadius();
+	static sf::RectangleShape GetStartVector(float startX, float startY, sf::Vector2f startVelocity, float y2);
 };
 

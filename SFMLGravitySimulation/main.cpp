@@ -1,7 +1,4 @@
 #include <SFML/Graphics.hpp>
-#include <vector>
-#include <iostream>
-#include <ctime>
 
 #include "planet.h"
 #include "settings.h"
@@ -24,10 +21,10 @@ int main()
     float radius = 10, mass = 10;
 
     float radiusIncreaser = 1.0f;
-    float massIncreaser = 1.0f;
+    float massIncreaser = 5.0f;
 
-    float maxRadius = 75.0f;
-    float maxMass = 75.0f;
+    float maxRadius = 100.0f;
+    float maxMass = 500.0f;
 
     bool isLeftButtonPressed = false;
 
@@ -41,31 +38,43 @@ int main()
         sf::Event event;
         while (window.pollEvent(event))
         {
+            // Close Events
             if (event.type == sf::Event::Closed)
                 window.close();
             if (event.type == sf::Event::KeyPressed)
                 if (event.key.code == sf::Keyboard::Escape)
                     window.close();
 
+            // Mouse Scroll Events (increase/decrease mass/radius)
             if (event.type == sf::Event::MouseWheelMoved)
             {
                 if (event.mouseWheel.delta == 1)
                 {
-                    if (radius < maxRadius)
+                    if (radius <= maxRadius)
                         radius += radiusIncreaser;
+                    else
+                        radius = maxRadius;
 
-                    if (mass < maxMass)
+                    if (mass <= maxMass)
                         mass += massIncreaser;
+                    else
+                        mass = maxMass;
                 }
                 if (event.mouseWheel.delta -= 1)
                 {
-                    if (radius > 0)
+                    if (radius >= 0)
                         radius -= radiusIncreaser;
+                    else
+                        radius = radiusIncreaser;
 
-                    if (mass > 0)
+                    if (mass >= 0)
                         mass -= massIncreaser;
+                    else
+                        mass = massIncreaser;
                 }
             }
+
+            // Spawn Planet When LMB Released
             if (event.type == sf::Event::MouseButtonReleased)
             {
                 if (event.mouseButton.button == sf::Mouse::Left)
@@ -85,13 +94,14 @@ int main()
         }
 
         window.clear();
-        Planet::DrawPlanets(window);
-        Planet::CollisionCheck(WINDOW_WIDTH, WINDOW_HEIGHT);
 
         sf::CircleShape templateShape;
         templateShape.setFillColor(col);
         templateShape.setRadius(radius);
         window.draw(templateShape);
+
+        Planet::DrawPlanets(window);
+        Planet::CollisionCheck(WINDOW_WIDTH, WINDOW_HEIGHT);
 
         if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
         {
@@ -106,7 +116,7 @@ int main()
             y = sf::Mouse::getPosition(window).y;
             startVelocity.x = x - startX;
             startVelocity.y = y - startY;
-            window.draw(Planet::DrawStartVector(startX, startY, startVelocity, y));
+            window.draw(Planet::GetStartVector(startX, startY, startVelocity, y));
         }
 
         window.display();

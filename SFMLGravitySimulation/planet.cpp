@@ -26,23 +26,27 @@ void Planet::DrawPlanets(sf::RenderWindow& window)
 	}
 }
 
-sf::RectangleShape Planet::DrawStartVector(float startX, float startY, sf::Vector2f startVelocity, float y2)
+sf::RectangleShape Planet::GetStartVector(float startX, float startY, sf::Vector2f startVelocity, float y2)
 {
 	float x = startVelocity.x;
 	float y = startVelocity.y;
+
 	float lineThickness = 5.0f;
+
 	float length = sqrt(pow(x, 2) + pow(y, 2));
 	x > 0 ? length *= 1 : length *= -1;
-	sf::Vector2f lineVector(length, lineThickness);
-	sf::RectangleShape line(lineVector);
+
+	sf::RectangleShape line(sf::Vector2f(length, lineThickness));
 	line.setFillColor(sf::Color::White);
 	line.setPosition(sf::Vector2f(startX, startY));
 	line.rotate(atan(y / x) * 180 / 3.14f);
+
 	return line;
 }
 
 void Planet::CollisionCheck(const int WINDOW_WIDTH, const int WINDOW_HEIGHT)
 {
+	// Collision Check With Borders
 	for (int i = 0; i < planets.size(); i++)
 	{
 		if (planets[i].shape.getPosition().x <= 0 || planets[i].shape.getPosition().x >= WINDOW_WIDTH - planets[i].radius * 2)
@@ -55,13 +59,14 @@ void Planet::CollisionCheck(const int WINDOW_WIDTH, const int WINDOW_HEIGHT)
 		}
 	}
 
+	// Collision Check With Other Planets
 	if (planets.size() > 1)
 	{
 		for (int i = 0; i < planets.size() - 1; i++)
 		{
 			for (int j = i + 1; j < planets.size(); j++)
 			{
-				if (GetDistation(planets[i], planets[j]) <= (planets[i].GetRadius() + planets[j].GetRadius()))
+				if (GetDistation(planets[i], planets[j]) <= (planets[i].radius + planets[j].radius))
 				{
 					sf::Vector2f v1 = planets[i].velocity;
 					sf::Vector2f v2 = planets[j].velocity;
@@ -90,13 +95,13 @@ void Planet::CollisionCheck(const int WINDOW_WIDTH, const int WINDOW_HEIGHT)
 					planets[j].velocity = v2 - (2 * m1 * scalarProduct * deltaC) / ((m1 + m2) * moduleDeltaC * moduleDeltaC);
 				}
 				else
-					CalculateForces();
+					CalculateGravityForces();
 			}
 		}
 	}
 }
 
-void Planet::CalculateForces()
+void Planet::CalculateGravityForces()
 {
 	if (planets.size() > 1)
 	{
@@ -104,11 +109,13 @@ void Planet::CalculateForces()
 		{
 			for (int j = i + 1; j < planets.size(); j++)
 			{
-				float x = planets[j].shape.getPosition().x + planets[j].GetRadius() - planets[i].shape.getPosition().x - planets[i].GetRadius();
-				float y = planets[j].shape.getPosition().y + planets[j].GetRadius() - planets[i].shape.getPosition().y - planets[i].GetRadius();
+				float x = planets[j].shape.getPosition().x + planets[j].radius - planets[i].shape.getPosition().x - planets[i].radius;
+				float y = planets[j].shape.getPosition().y + planets[j].radius - planets[i].shape.getPosition().y - planets[i].radius;
 				float lenght = GetDistation(planets[i], planets[j]);
+
 				sf::Vector2f force(x / lenght, y / lenght);
-				force *= (float)(planets[i].GetMass() * planets[j].GetMass() / pow(lenght, 2));
+				force *= (float)(planets[i].mass * planets[j].mass / pow(lenght, 2));
+
 				planets[i].velocity += force;
 				planets[j].velocity -= force;
 			}
@@ -118,22 +125,7 @@ void Planet::CalculateForces()
 
 float Planet::GetDistation(Planet planet1, Planet planet2)
 {
-	float x = planet2.shape.getPosition().x + planet2.GetRadius() - planet1.shape.getPosition().x - planet1.GetRadius();
-	float y = planet2.shape.getPosition().y + planet2.GetRadius() - planet1.shape.getPosition().y - planet1.GetRadius();
+	float x = planet2.shape.getPosition().x + planet2.radius - planet1.shape.getPosition().x - planet1.radius;
+	float y = planet2.shape.getPosition().y + planet2.radius - planet1.shape.getPosition().y - planet1.radius;
 	return sqrt(pow(x, 2) + pow(y, 2));
-}
-
-sf::Vector2f Planet::GetVelocity()
-{
-	return velocity;
-}
-
-float Planet::GetMass()
-{
-	return mass;
-}
-
-float Planet::GetRadius()
-{
-	return radius;
 }
